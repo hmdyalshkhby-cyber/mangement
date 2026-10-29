@@ -1,0 +1,1218 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Management Fundamentals Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="goToStart()">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-indigo-200">
+          M
+        </div>
+        <div>
+          <h1 class="font-bold text-slate-900 leading-tight">Management Prep</h1>
+          <p class="text-xs text-slate-500 font-medium">Interactive Knowledge Test</p>
+        </div>
+      </div>
+
+      <!-- Mode Toggle / Progress Info (Hidden on start) -->
+      <div id="header-stats" class="hidden flex items-center space-x-4 sm:space-x-6 text-sm">
+        <div class="flex items-center space-x-2 text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg">
+          <i class="fa-solid fa-clock text-indigo-500"></i>
+          <span id="timer-display" class="font-mono font-semibold">00:00</span>
+        </div>
+        <div class="flex items-center space-x-2 text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg">
+          <i class="fa-solid fa-bullseye text-emerald-500"></i>
+          <span>Score: <strong id="score-display" class="text-slate-900">0</strong></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col justify-center">
+
+    <!-- Screen 1: Start Screen -->
+    <div id="start-screen" class="max-w-2xl mx-auto w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-10 text-center transition-all duration-300">
+      <div class="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-600 text-3xl">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">Master Management Concepts</h2>
+      <p class="text-slate-600 mb-8 max-w-lg mx-auto text-sm sm:text-base leading-relaxed">
+        Test your knowledge across management schools of thought, organizational structures, environmental factors, and historical foundations.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 text-left">
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+          <div class="text-indigo-600 font-semibold mb-1 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-list-check"></i> Total Questions
+          </div>
+          <div class="text-2xl font-bold text-slate-800" id="total-q-badge">63</div>
+        </div>
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+          <div class="text-indigo-600 font-semibold mb-1 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-layer-group"></i> Categories
+          </div>
+          <div class="text-2xl font-bold text-slate-800">5 Themes</div>
+        </div>
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+          <div class="text-indigo-600 font-semibold mb-1 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-bolt"></i> Mode
+          </div>
+          <div class="text-2xl font-bold text-slate-800">Practice</div>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <button onclick="startQuiz(false)" class="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all flex items-center justify-center space-x-2 text-lg">
+          <span>Start Full Quiz</span>
+          <i class="fa-solid fa-arrow-right text-sm"></i>
+        </button>
+        <button onclick="startQuiz(true)" class="w-full py-3 px-6 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl border border-slate-200 transition-all flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-shuffle text-indigo-500"></i>
+          <span>Shuffle & Start Quiz</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Screen 2: Quiz Engine -->
+    <div id="quiz-screen" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+      
+      <!-- Left 3 Columns: Main Question Card -->
+      <div class="lg:col-span-3 bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden flex flex-col">
+        
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-100 h-2">
+          <div id="progress-bar" class="bg-indigo-600 h-2 transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <div class="p-6 sm:p-8 flex-1 flex flex-col">
+          <!-- Meta Header -->
+          <div class="flex items-center justify-between mb-4">
+            <span id="question-number-badge" class="px-3 py-1 bg-indigo-50 text-indigo-700 font-semibold text-xs sm:text-sm rounded-full">
+              Question 1 of 63
+            </span>
+            <button onclick="toggleBookmark()" id="bookmark-btn" class="text-slate-400 hover:text-amber-500 transition-colors p-2">
+              <i class="fa-regular fa-bookmark text-lg"></i>
+            </button>
+          </div>
+
+          <!-- Question Text -->
+          <h3 id="question-text" class="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed mb-6">
+            Loading question...
+          </h3>
+
+          <!-- Options Container -->
+          <div id="options-container" class="space-y-3 mb-8 flex-1">
+            <!-- Dynamic Options -->
+          </div>
+
+          <!-- Explanation Banner (Shown after selection) -->
+          <div id="explanation-box" class="hidden mb-6 p-4 rounded-xl border transition-all">
+            <div class="flex items-start space-x-3">
+              <div id="explanation-icon" class="text-xl mt-0.5"></div>
+              <div>
+                <h4 id="explanation-title" class="font-bold text-sm mb-1"></h4>
+                <p id="explanation-text" class="text-sm leading-relaxed"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+            <button id="prev-btn" onclick="prevQuestion()" class="px-4 py-2 text-slate-600 hover:text-slate-900 font-medium rounded-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center space-x-2 text-sm">
+              <i class="fa-solid fa-chevron-left text-xs"></i>
+              <span>Previous</span>
+            </button>
+            <button id="next-btn" onclick="nextQuestion()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md shadow-indigo-100 flex items-center space-x-2 text-sm">
+              <span>Next</span>
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right 1 Column: Question Navigator Sidebar -->
+      <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="font-bold text-slate-900 text-sm">Question Map</h4>
+          <span id="answered-count-badge" class="text-xs text-slate-500 font-medium">0/63 Answered</span>
+        </div>
+
+        <!-- Grid of Question Indicators -->
+        <div id="question-grid" class="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-5 gap-2 max-h-72 lg:max-h-96 overflow-y-auto custom-scrollbar p-1">
+          <!-- Dynamically Generated Numbers -->
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex flex-col space-y-2 text-xs text-slate-500">
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-indigo-600"></span>
+            <span>Current Question</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span>Correct</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+            <span>Incorrect</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-slate-200"></span>
+            <span>Unanswered</span>
+          </div>
+        </div>
+
+        <button onclick="finishQuiz()" class="w-full mt-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-sm transition-all shadow-sm">
+          Finish & View Results
+        </button>
+      </div>
+    </div>
+
+    <!-- Screen 3: Results Summary -->
+    <div id="results-screen" class="hidden max-w-3xl mx-auto w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-10">
+      <div class="text-center mb-8">
+        <div id="result-badge-icon" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+          <!-- Icon injected via JS -->
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Quiz Completed!</h2>
+        <p id="result-subtitle" class="text-slate-600 text-sm sm:text-base">Here is a detailed breakdown of your performance.</p>
+      </div>
+
+      <!-- Score Dashboard -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center">
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Total Score</div>
+          <div class="text-2xl sm:text-3xl font-bold text-indigo-600" id="res-score-pct">0%</div>
+        </div>
+        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 text-center">
+          <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-1">Correct</div>
+          <div class="text-2xl sm:text-3xl font-bold text-emerald-700" id="res-correct-count">0</div>
+        </div>
+        <div class="bg-rose-50 p-4 rounded-xl border border-rose-100 text-center">
+          <div class="text-xs font-semibold text-rose-600 uppercase tracking-wider mb-1">Incorrect</div>
+          <div class="text-2xl sm:text-3xl font-bold text-rose-700" id="res-incorrect-count">0</div>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center">
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Time Spent</div>
+          <div class="text-2xl sm:text-3xl font-bold text-slate-800" id="res-time-spent">00:00</div>
+        </div>
+      </div>
+
+      <!-- Review Section Toggle -->
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-bold text-slate-900 text-lg">Question Review</h3>
+        <div class="flex space-x-2">
+          <button onclick="filterReview('all')" id="filter-all" class="px-3 py-1 bg-slate-900 text-white rounded-lg text-xs font-medium">All</button>
+          <button onclick="filterReview('incorrect')" id="filter-incorrect" class="px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-medium">Incorrect Only</button>
+        </div>
+      </div>
+
+      <!-- Review List -->
+      <div id="review-list" class="space-y-4 max-h-96 overflow-y-auto custom-scrollbar pr-2 mb-8">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button onclick="goToStart()" class="flex-1 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-center shadow-md transition-all">
+          Retake Quiz
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Raw Question Data
+    const rawQuestions = [
+  {
+    "question": "Management is a science because it relies on a systematic scientific approach based on objective principles, laws, and theories. This definition refers to:",
+    "options": ["Management as an Art", "Management as a Science", "Management as a Profession", "Management as a Skill"],
+    "correct": "B"
+  },
+  {
+    "question": "Grounded in scientific research, systematic data collection, observation, and experimentation (such as Time and Motion studies or behavioral theories). Which concept is defined above?",
+    "options": ["Predictability", "Teachable Nature", "Reference and Methodology", "Financial Management"],
+    "correct": "C"
+  },
+  {
+    "question": "Its core principles can be taught in universities and institutes (e.g., planning, controlling functions, and financial management rules). Which concept is defined above?",
+    "options": ["Reference and Methodology", "Teachable Nature", "Predictability", "Systematic Observation"],
+    "correct": "B"
+  },
+  {
+    "question": "Scientific principles enable managers to forecast outcomes when applying specific procedures under controlled conditions. Which concept is defined above?",
+    "options": ["Predictability", "Teachable Nature", "Reference and Methodology", "Behavioral Theory"],
+    "correct": "A"
+  },
+  {
+    "question": "Management is an art because it requires personal skill and practical experience to apply these scientific principles to a dynamic workplace reality. Which concept or section title is defined above?",
+    "options": ["Management as a Science", "Management as an Art", "Management as a Profession", "Predictability in Management"],
+    "correct": "B"
+  },
+  {
+    "question": "The artistic element shows in how a manager handles emerging crises, persuades subordinates, and innovates in decision-making. Which concept is defined above?",
+    "options": ["Individual Differences", "Reliance on Personal Skill", "Flexibility and Context", "Predictability"],
+    "correct": "B"
+  },
+  {
+    "question": "Two managers may study the same curriculum at the same university, yet one succeeds while the other struggles; the difference lies in art, practical application, and leadership intuition. Which concept is defined above?",
+    "options": ["Reliance on Personal Skill", "Flexibility and Context", "Individual Differences", "Teachable Nature"],
+    "correct": "C"
+  },
+  {
+    "question": "Off-the-shelf theories cannot be rigidly applied to every situation; they require a personal touch and an understanding of each case's unique context. Which concept is defined above?",
+    "options": ["Flexibility and Context", "Reliance on Personal Skill", "Reference and Methodology", "Individual Differences"],
+    "correct": "A"
+  },
+  {
+    "question": "Provides the manager with foundational knowledge, principles, and analytical tools. Which component of management is described above?",
+    "options": ["Art", "Science", "Synthesis", "Flexibility"],
+    "correct": "B"
+  },
+  {
+    "question": "Gives the manager the ability and skill to execute these tools and principles efficiently and wisely across various situations. Which component of management is described above?",
+    "options": ["Science", "Methodology", "Art", "Predictability"],
+    "correct": "C"
+  },
+  {
+    "question": "Administrative practice was manifested in the construction of the Pyramids, which required organizing the work of hundreds of thousands of workers, planning supplies and provisions, dividing labor, and precisely allocating tasks. Which historical civilization is described above?",
+    "options": ["Babylonian Civilization", "Ancient Egyptian Civilization", "Islamic Civilization", "Roman Civilization"],
+    "correct": "B"
+  },
+  {
+    "question": "Demonstrated administrative and legal control by establishing minimum wages, defining responsibilities, and setting rules for commercial exchange through the Code of Hammurabi. Which historical civilization is described above?",
+    "options": ["Ancient Egyptian Civilization", "Islamic Civilization", "Babylonian Civilization", "Greek Civilization"],
+    "correct": "C"
+  },
+  {
+    "question": "Provided a comprehensive model in management by organizing the public treasury (Bayt al-Mal), introducing the administrative system of departments (Diwans, such as the army and land tax departments). Which historical civilization is described above?",
+    "options": ["Islamic Civilization", "Babylonian Civilization", "Ancient Egyptian Civilization", "Industrial Civilization"],
+    "correct": "A"
+  },
+  {
+    "question": "Focused on production efficiency, controlling work flow, and physical and clerical aspects, while neglecting the psychological and social aspects of the worker. Which management school of thought is defined above?",
+    "options": ["Behavioral School", "Classical (Traditional) Schools of Thought", "Modern School of Thought", "Contingency School"],
+    "correct": "B"
+  },
+  {
+    "question": "Focuses on the workshop/worker level and productivity. Which classical school of thought (and pioneer) is defined above?",
+    "options": ["Administrative Management School (Henri Fayol)", "Bureaucratic School (Max Weber)", "Scientific Management School (Frederick Taylor)", "Human Relations School (Elton Mayo)"],
+    "correct": "C"
+  },
+  {
+    "question": "Focuses on top management level and comprehensive principles. Which classical school of thought (and pioneer) is defined above?",
+    "options": ["Scientific Management School (Frederick Taylor)", "Administrative Management School (Henri Fayol)", "Bureaucratic School (Max Weber)", "Systems School"],
+    "correct": "B"
+  },
+  {
+    "question": "Focuses on organizational structure and strict rules. Which classical school of thought (and pioneer) is defined above?",
+    "options": ["Bureaucratic School (Max Weber)", "Scientific Management School (Frederick Taylor)", "Administrative Management School (Henri Fayol)", "Decision-Making School"],
+    "correct": "A"
+  },
+  {
+    "question": "Taylor focused on the shop-floor (factory) level to increase worker productivity and reduce time and effort waste. Which management school and pioneer is described above?",
+    "options": ["Administrative Management School — Henri Fayol", "Bureaucratic School — Max Weber", "Scientific Management School — Frederick Taylor", "Human Relations School — Elton Mayo"],
+    "correct": "C"
+  },
+  {
+    "question": "Time and Motion Study to determine the single best way to perform each task. Which core idea and principle of Scientific Management is defined above?",
+    "options": ["Financial Incentives", "Replacing Rule-of-Thumb with Scientific Methods", "Scientific Selection and Training of Workers", "Division of Responsibility"],
+    "correct": "B"
+  },
+  {
+    "question": "Selecting the right worker for the right job and training them according to specific steps. Which core principle of Scientific Management is defined above?",
+    "options": ["Scientific Selection and Training of Workers", "Division of Responsibility", "Financial Incentives", "Replacing Rule-of-Thumb with Scientific Methods"],
+    "correct": "A"
+  },
+  {
+    "question": "Linking pay to productivity (piece-rate system) to drive worker motivation. Which core principle of Scientific Management is defined above?",
+    "options": ["Replacing Rule-of-Thumb with Scientific Methods", "Scientific Selection and Training of Workers", "Financial Incentives", "Division of Responsibility"],
+    "correct": "C"
+  },
+  {
+    "question": "Separating planning tasks (management responsibility) from execution tasks (workers' responsibility). Which core principle of Scientific Management is defined above?",
+    "options": ["Financial Incentives", "Division of Responsibility", "Scientific Selection and Training of Worker", "Replacing Rule-of-Thumb with Scientific Methods"],
+    "correct": "B"
+  },
+  {
+    "question": "This school viewed management from top to bottom (from top management's perspective) and considered management a general activity applicable to any institution. Which school of management thought is defined above?",
+    "options": ["Scientific Management School", "Administrative (General) School — Henri Fayol", "Bureaucratic School", "Human Relations School"],
+    "correct": "B"
+  },
+  {
+    "question": "Forecasting the future and drawing up plans of action. Which of Fayol's Five Functions of Management is defined above?",
+    "options": ["Organizing", "Planning", "Commanding (Directing)", "Controlling"],
+    "correct": "B"
+  },
+  {
+    "question": "Building the physical and human structure of the organization. Which of Fayol's Five Functions of Management is defined above?",
+    "options": ["Coordinating", "Planning", "Organizing", "Controlling"],
+    "correct": "C"
+  },
+  {
+    "question": "Guiding and motivating subordinates. Which of Fayol's Five Functions of Management is defined above?",
+    "options": ["Commanding (Directing)", "Coordinating", "Planning", "Organizing"],
+    "correct": "A"
+  },
+  {
+    "question": "Binding together, unifying, and harmonizing all activities. Which of Fayol's Five Functions of Management is defined above?",
+    "options": ["Controlling", "Commanding (Directing)", "Organizing", "Coordinating"],
+    "correct": "D"
+  },
+  {
+    "question": "Seeing that everything occurs in conformity with established rules and expressed commands. Which of Fayol's Five Functions of Management is defined above?",
+    "options": ["Controlling", "Planning", "Coordinating", "Organizing"],
+    "correct": "A"
+  },
+  {
+    "question": "Presented a structural model relying on rational authority and strict rules to achieve maximum discipline and impartiality. Which school of management thought (and pioneer) is defined above?",
+    "options": ["Scientific Management School — Frederick Taylor", "Administrative School — Henri Fayol", "Bureaucratic School — Max Weber", "Human Relations School — Elton Mayo"],
+    "correct": "C"
+  },
+  {
+    "question": "Clear division of jobs and authority from top to bottom. Which characteristic of Bureaucratic Organization is defined above?",
+    "options": ["Strict Hierarchy", "Written Rules and Regulations", "Impersonality", "Job Specialization"],
+    "correct": "A"
+  },
+  {
+    "question": "Reliance on fixed laws governing all decisions, leaving no room for personal discretion. Which characteristic of Bureaucratic Organization is defined above?",
+    "options": ["Impersonality", "Written Rules and Regulations", "Job Specialization", "Strict Hierarchy"],
+    "correct": "B"
+  },
+  {
+    "question": "Dealing with employees and clients based strictly on regulations without bias or personal relationships. Which characteristic of Bureaucratic Organization is defined above?",
+    "options": ["Strict Hierarchy", "Job Specialization", "Impersonality", "Written Rules and Regulations"],
+    "correct": "C"
+  },
+  {
+    "question": "Appointment and promotion based on technical qualifications and credentials rather than personal connections. Which characteristic of Bureaucratic Organization is defined above?",
+    "options": ["Job Specialization", "Impersonality", "Strict Hierarchy", "Written Rules and Regulations"],
+    "correct": "A"
+  },
+  {
+    "question": "Organizations that primarily aim to generate financial returns and profits for owners and shareholders (e.g., commercial companies, manufacturing plants, and commercial banks) are known as:",
+    "options": ["Non-Profit Organizations", "For-Profit Organizations", "Public Sector Organizations", "Charitable Associations"],
+    "correct": "B"
+  },
+  {
+    "question": "Organizations established to provide social, humanitarian, or cultural services without targeting financial profit, where any financial surplus is reinvested into expanding their services (e.g., charitable associations, public hospitals, and non-profit universities), are referred to as:",
+    "options": ["Non-Profit Organizations", "For-Profit Organizations", "Commercial Enterprises", "Manufacturing Plants"],
+    "correct": "A"
+  },
+  {
+    "question": "Classification by Purpose includes which of the following categories of organizations?",
+    "options": ["Public and Private Organizations", "For-Profit and Non-Profit Organizations", "Commercial and Industrial Organizations", "Local and International Organizations"],
+    "correct": "B"
+  },
+  {
+    "question": "Organizations fully owned by the state, aiming to provide public services and safeguard national interests (e.g., ministries and government authorities) are classified as:",
+    "options": ["Private Sector", "Public Sector", "Mixed Sector", "Non-Profit Sector"],
+    "correct": "B"
+  },
+  {
+    "question": "Organizations owned by individuals, families, or private shareholders, managed for investment and profit generation are classified as:",
+    "options": ["Public Sector", "Mixed Sector", "Private Sector", "Government Authorities"],
+    "correct": "C"
+  },
+  {
+    "question": "Organizations jointly owned and managed by the state alongside private sector individuals or companies according to specific shares are classified as:",
+    "options": ["Mixed Sector", "Public Sector", "Private Sector", "Non-Profit Sector"],
+    "correct": "A"
+  },
+  {
+    "question": "According to Classification by Ownership, which of the following is an example of the Public Sector?",
+    "options": ["Private shareholders and families", "Ministries and government authorities", "Companies owned according to specific shares", "Commercial banks owned by individuals"],
+    "correct": "B"
+  },
+  {
+    "question": "Organizations that focus on converting raw materials into tangible physical outputs (e.g., industrial and agricultural companies) are known as:",
+    "options": ["Service Organizations", "Product/Manufacturing Organizations", "Non-Profit Organizations", "Public Sector Organizations"],
+    "correct": "B"
+  },
+  {
+    "question": "Organizations that provide intangible outputs that satisfy direct customer needs (e.g., educational institutions, healthcare centers, tourism and hospitality firms, and airlines) are known as:",
+    "options": ["Product Organizations", "Manufacturing Organizations", "Service Organizations", "Mixed Sector Organizations"],
+    "correct": "C"
+  },
+  {
+    "question": "Which of the following is an example of a Service Organization?",
+    "options": ["Industrial companies", "Agricultural companies", "Raw material processing plants", "Tourism and hospitality firms"],
+    "correct": "D"
+  },
+  {
+    "question": "Under Classification by Activity, organizations are primarily categorized based on whether their outputs are:",
+    "options": ["Public or Private", "For-Profit or Non-Profit", "Tangible physical outputs or intangible outputs", "Owned by the state or individuals"],
+    "correct": "C"
+  },
+  {
+    "question": "Businesses owned by a single individual who holds absolute and unlimited liability for all business debts and obligations are known as:",
+    "options": ["Partnerships", "Sole Proprietorships", "Corporations", "Multinational Corporations"],
+    "correct": "B"
+  },
+  {
+    "question": "Businesses built on mutual trust and personal relationships among partners where partners personally and jointly bear full liability for company debts are called:",
+    "options": ["Partnerships", "Sole Proprietorships", "Joint-Stock Companies", "Multinational Corporations"],
+    "correct": "A"
+  },
+  {
+    "question": "Organizations where capital is pooled and divided into equal shares, shareholders' liability is limited to the value of their shares, and the company maintains a separate legal identity from its owners are referred to as:",
+    "options": ["Partnerships", "Sole Proprietorships", "Corporations / Joint-Stock Companies", "Public Sector Organizations"],
+    "correct": "C"
+  },
+  {
+    "question": "Large corporations headquartered in one country (the home country) with branches, production, and marketing operations extending across multiple other countries (host countries) are known as:",
+    "options": ["Sole Proprietorships", "General Partnerships", "Multinational Corporations (MNCs)", "Local Service Organizations"],
+    "correct": "C"
+  },
+  {
+    "question": "Consists of external forces and entities that interact with the organization daily and directly impact its operational activities.",
+    "options": ["Internal Environment", "Micro / Task External Environment", "Macro / General External Environment", "Available Resources"],
+    "correct": "B"
+  },
+  {
+    "question": "The buyers or end users of products and services; satisfying their needs determines organizational success.",
+    "options": ["Suppliers", "Competitors", "Customers", "Distributors and Market Intermediaries"],
+    "correct": "C"
+  },
+  {
+    "question": "Organizations offering similar products or substitutes in the same market, competing to attract customers.",
+    "options": ["Competitors", "Suppliers", "Distributors and Market Intermediaries", "Organizational Structure"],
+    "correct": "A"
+  },
+  {
+    "question": "Partner entities that provide the organization with the necessary supplies, raw materials, and equipment for manufacturing and operations.",
+    "options": ["Customers", "Competitors", "Available Resources", "Suppliers"],
+    "correct": "D"
+  },
+  {
+    "question": "Channels and entities responsible for transporting, distributing, and marketing outputs to reach the final consumer.",
+    "options": ["Suppliers", "Distributors and Market Intermediaries", "Customers", "Micro / Task External Environment"],
+    "correct": "B"
+  },
+  {
+    "question": "Factors and components located within the organization's boundary that fall under its direct control:",
+    "options": ["Micro / Task External Environment", "Internal Environment", "Macro / General External Environment", "Distributors and Market Intermediaries"],
+    "correct": "B"
+  },
+  {
+    "question": "The shared set of values, beliefs, and norms that shape employee behavior and guide interactions with decisions and each other.",
+    "options": ["Organizational Structure", "Leadership Style", "Organizational Culture", "Available Resources"],
+    "correct": "C"
+  },
+  {
+    "question": "The formal framework that defines task allocation, lines of authority, and administrative workflow.",
+    "options": ["Organizational Culture", "Leadership Style", "Available Resources", "Organizational Structure"],
+    "correct": "D"
+  },
+  {
+    "question": "The human, financial, physical, and technological capabilities owned by the organization.",
+    "options": ["Available Resources", "Leadership Style", "Organizational Structure", "Suppliers"],
+    "correct": "A"
+  },
+  {
+    "question": "The prevailing philosophy and approach used by leadership to make decisions and motivate subordinates.",
+    "options": ["Organizational Culture", "Leadership Style", "Internal Environment", "Micro / Task External Environment"],
+    "correct": "B"
+  },
+  {
+    "question": "Political stability, government policies, tax regulations, trade policies, and sector-specific government support.",
+    "options": ["Economic Factors", "Political Factors", "Social & Cultural Factors", "Technological Factors"],
+    "correct": "B"
+  },
+  {
+    "question": "Inflation rates, interest rates, economic growth, currency strength, and unemployment rates.",
+    "options": ["Political Factors", "Social & Cultural Factors", "Economic Factors", "Available Resources"],
+    "correct": "C"
+  },
+  {
+    "question": "Customs, demographic composition (population growth, age distribution), and societal values.",
+    "options": ["Social & Cultural Factors", "Political Factors", "Economic Factors", "Organizational Culture"],
+    "correct": "A"
+  },
+  {
+    "question": "Emerging innovations, technological advancements, artificial intelligence, and process automation.",
+    "options": ["Legal Factors", "Environmental Factors", "Technological Factors", "Economic Factors"],
+    "correct": "C"
+  },
+  {
+    "question": "Labor laws, consumer protection regulations, antitrust laws, and strict environmental and health regulations.",
+    "options": ["Legal Factors", "Political Factors", "Environmental Factors", "Social & Cultural Factors"],
+    "correct": "A"
+  },
+  {
+    "question": "Climate change, environmental sustainability, recycling initiatives, and the transition toward clean energy.",
+    "options": ["Legal Factors", "Technological Factors", "Environmental Factors", "Economic Factors"],
+    "correct": "C"
+  },
+  {
+    "question": "Management focuses on the optimal utilization of limited resources (human, financial, and physical) by enhancing operational processes.",
+    "options": [
+      "Adapting to Environmental Changes",
+      "Utilizing Scarce Resources and Minimizing Waste",
+      "Balancing Stakeholder Interests",
+      "Developing Workforce Capabilities and Building Leaders"
+    ],
+    "correct": "B"
+  },
+  {
+    "question": "Management serves as a sensory organ detecting changes in the external environment (economic, technological, and competitive), enabling the organization to adjust its course and strategies to mitigate risks and capitalize on opportunities.",
+    "options": [
+      "Utilizing Scarce Resources and Minimizing Waste",
+      "Dynamism and Flexibility",
+      "Adapting to Environmental Changes",
+      "Balancing Stakeholder Interests"
+    ],
+    "correct": "C"
+  },
+  {
+    "question": "Management balances the goals and needs of various stakeholders (owners seeking profits, employees expecting fair wages and safe working environments, and customers looking for quality and fair pricing).",
+    "options": [
+      "Balancing Stakeholder Interests",
+      "Developing Workforce Capabilities and Building Leaders",
+      "Universality and Comprehensiveness",
+      "Interactive and Social Nature"
+    ],
+    "correct": "A"
+  },
+  {
+    "question": "Management extends beyond daily operations to develop employees' skills through training, empowerment, and mentorship, enhancing human capital and building a pipeline of future leaders.",
+    "options": [
+      "Balancing Stakeholder Interests",
+      "Developing Workforce Capabilities and Building Leaders",
+      "Goal-Oriented",
+      "Continuity"
+    ],
+    "correct": "B"
+  },
+  {
+    "question": "Management is a universal practice applicable across all types of organizations (public, private, non-profit) and at all administrative levels, regardless of the nature of the activity.",
+    "options": [
+      "Goal-Oriented",
+      "Universality and Comprehensiveness",
+      "Continuity",
+      "Dynamism and Flexibility"
+    ],
+    "correct": "B"
+  },
+  {
+    "question": "Management is not a random process; it is a structured activity designed specifically to reach predetermined objectives and targets.",
+    "options": [
+      "Universality and Comprehensiveness",
+      "Interactive and Social Nature",
+      "Goal-Oriented",
+      "Adapting to Environmental Changes"
+    ],
+    "correct": "C"
+  },
+  {
+    "question": "Management is a continuous, recurring cycle that does not stop once a goal is reached. Achieving one objective triggers a new cycle to set subsequent operational and developmental goals.",
+    "options": [
+      "Continuity",
+      "Dynamism and Flexibility",
+      "Process",
+      "Interactive and Social Nature"
+    ],
+    "correct": "A"
+  },
+  {
+    "question": "Managerial principles and methods adapt to surrounding conditions and changes, demonstrating flexibility rather than rigidity or strict routine.",
+    "options": [
+      "Continuity",
+      "Dynamism and Flexibility",
+      "Contingency Theory",
+      "Interactive and Social Nature"
+    ],
+    "correct": "B"
+  },
+  {
+    "question": "Management centers on the human element; it is accomplished through people, daily interaction, constructive communication, and mutual influence.",
+    "options": [
+      "Developing Workforce Capabilities and Building Leaders",
+      "Informal Organization",
+      "Interactive and Social Nature",
+      "Directing (Leading)"
+    ],
+    "correct": "C"
+  },
+  {
+    "question": "Psychological and social factors (such as recognition and team morale) affect productivity more than physical conditions.",
+    "options": [
+      "Informal Organization",
+      "The Worker is Not Just a Machine",
+      "Leadership Style",
+      "Systems Theory"
+    ],
+    "correct": "B"
+  },
+  {
+    "question": "A network of informal social relationships exists among workers inside the factory that shapes their behavior and production output.",
+    "options": [
+      "Transformation Processes",
+      "Systems Theory",
+      "Informal Organization",
+      "Leadership Style"
+    ],
+    "correct": "C"
+  },
+  {
+    "question": "Democratic leadership and genuine care for workers increase employee loyalty and productivity.",
+    "options": [
+      "Leadership Style",
+      "Informal Organization",
+      "Interdependence",
+      "The Worker is Not Just a Machine"
+    ],
+    "correct": "A"
+  },
+  {
+    "question": "This theory views the organization as an integrated whole made up of interrelated parts, functioning as an open system that continuously interacts with the external environment.",
+    "options": [
+      "Informal Organization",
+      "Systems Theory",
+      "Feedback",
+      "Transformation Processes"
+    ],
+    "correct": "B"
+  },
+  {
+    "question": "Human, physical, financial, and informational resources.",
+    "options": [
+      "Outputs",
+      "Feedback",
+      "Transformation Processes",
+      "Inputs"
+    ],
+    "correct": "D"
+  },
+  {
+    "question": "Administrative and technical activities that transform inputs into outputs.",
+    "options": [
+      "Inputs",
+      "Transformation Processes",
+      "Interdependence",
+      "Outputs"
+    ],
+    "correct": "B"
+  },
+  {
+    "question": "Products, services, and profits.",
+    "options": [
+      "Inputs",
+      "Feedback",
+      "Outputs",
+      "Transformation Processes"
+    ],
+    "correct": "C"
+  },
+  {
+    "question": "Evaluating outputs to modify and enhance inputs and processes.",
+    "options": [
+      "Feedback",
+      "Interdependence",
+      "Systems Theory",
+      "Informal Organization"
+    ],
+    "correct": "A"
+  },
+  {
+    "question": "Any dysfunction in one department (such as marketing) affects the remaining departments (such as production and finance).",
+    "options": [
+      "Leadership Style",
+      "Feedback",
+      "Interdependence",
+      "Transformation Processes"
+    ],
+    "correct": "C"
+  },
+  {
+    "question": "There is no single best way to manage suitable for all times and places; decisions depend on the specific situation and surrounding environment.",
+    "options": [
+      "Total Quality Management (TQM)",
+      "Contingency Theory",
+      "Digital Management",
+      "Business Process Reengineering (BPR)"
+    ],
+    "correct": "B"
+  },
+  {
+    "question": "Continuous improvement of processes and products aimed at customer satisfaction, involving all members of the organization.",
+    "options": [
+      "Business Process Reengineering (BPR)",
+      "Systems Theory",
+      "Total Quality Management (TQM)",
+      "Digital Management"
+    ],
+    "correct": "C"
+  },
+  {
+    "question": "Radical rethinking and fundamental redesign of organizational processes to achieve dramatic improvements in performance metrics (cost, quality, speed).",
+    "options": [
+      "Business Process Reengineering (BPR)",
+      "Total Quality Management (TQM)",
+      "Contingency Theory",
+      "Informal Organization"
+    ],
+    "correct": "A"
+  },
+  {
+    "question": "Relying on artificial intelligence technologies and data analytics in administrative decision-making, moving away from traditional paper-based transactions.",
+    "options": [
+      "Contingency Theory",
+      "Transformation Processes",
+      "Systems Theory",
+      "Digital Management"
+    ],
+    "correct": "D"
+  },
+  {
+    "question": "Is the process of planning, organizing, leading (directing), and controlling the available resources in an organization, and utilizing them with the highest possible degree of efficiency and effectiveness to achieve specific, predetermined goals.",
+    "options": [
+      "Contingency Theory",
+      "Management",
+      "Business Process Reengineering",
+      "Systems Theory"
+    ],
+    "correct": "B"
+  },
+  {
+    "question": "Indicates that management is not a single, isolated event, but rather a continuous, interconnected set of activities and stages where each stage directly influences the others.",
+    "options": [
+      "Process",
+      "Organizing",
+      "Controlling",
+      "Planning"
+    ],
+    "correct": "A"
+  },
+  {
+    "question": "Setting goals and outlining paths and action plans to achieve them.",
+    "options": [
+      "Controlling",
+      "Organizing",
+      "Planning",
+      "Directing (Leading)"
+    ],
+    "correct": "C"
+  },
+  {
+    "question": "Allocating tasks, defining responsibilities, and establishing the administrative structure.",
+    "options": [
+      "Planning",
+      "Organizing",
+      "Directing (Leading)",
+      "Controlling"
+    ],
+    "correct": "B"
+  },
+  {
+    "question": "Motivating individuals, leading them, and facilitating communication to ensure work execution.",
+    "options": [
+      "Controlling",
+      "Planning",
+      "Organizing",
+      "Directing (Leading)"
+    ],
+    "correct": "D"
+  },
+  {
+    "question": "Measuring actual performance, comparing it against the plan, and correcting deviations if any exist.",
+    "options": [
+      "Controlling",
+      "Directing (Leading)",
+      "Planning",
+      "Organizing"
+    ],
+    "correct": "A"
+  }
+];
+
+    // Convert letter (A, B, C, D) to zero-based index
+    const letterToIndex = { "A": 0, "B": 1, "C": 2, "D": 3 };
+    const indexToLetter = ["A", "B", "C", "D"];
+
+    // App State
+    let quizQuestions = [];
+    let currentIndex = 0;
+    let userAnswers = {}; // Map of questionIndex -> selectedOptionIndex
+    let bookmarked = new Set();
+    let timerInterval = null;
+    let secondsElapsed = 0;
+
+    // Elements
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultsScreen = document.getElementById('results-screen');
+    const headerStats = document.getElementById('header-stats');
+    
+    document.getElementById('total-q-badge').innerText = rawQuestions.length;
+
+    function goToStart() {
+      clearInterval(timerInterval);
+      startScreen.classList.remove('hidden');
+      quizScreen.classList.add('hidden');
+      resultsScreen.classList.add('hidden');
+      headerStats.classList.add('hidden');
+    }
+
+    function startQuiz(shouldShuffle = false) {
+      // Setup Data
+      if (shouldShuffle) {
+        quizQuestions = [...rawQuestions].sort(() => Math.random() - 0.5);
+      } else {
+        quizQuestions = [...rawQuestions];
+      }
+
+      currentIndex = 0;
+      userAnswers = {};
+      bookmarked.clear();
+      secondsElapsed = 0;
+
+      // Update UI Views
+      startScreen.classList.add('hidden');
+      resultsScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      headerStats.classList.remove('hidden');
+
+      // Start Timer
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+        const secs = String(secondsElapsed % 60).padStart(2, '0');
+        document.getElementById('timer-display').innerText = `${mins}:${secs}`;
+      }, 1000);
+
+      renderQuestionMap();
+      loadQuestion(0);
+      updateScoreDisplay();
+    }
+
+    function renderQuestionMap() {
+      const grid = document.getElementById('question-grid');
+      grid.innerHTML = '';
+      
+      quizQuestions.forEach((q, idx) => {
+        const btn = document.createElement('button');
+        btn.id = `q-map-${idx}`;
+        btn.innerText = idx + 1;
+        btn.onclick = () => jumpToQuestion(idx);
+        btn.className = `w-9 h-9 rounded-lg font-semibold text-xs transition-all flex items-center justify-center border`;
+        grid.appendChild(btn);
+      });
+
+      updateQuestionMapStyles();
+    }
+
+    function updateQuestionMapStyles() {
+      quizQuestions.forEach((q, idx) => {
+        const btn = document.getElementById(`q-map-${idx}`);
+        if (!btn) return;
+
+        const isCurrent = idx === currentIndex;
+        const userAnswer = userAnswers[idx];
+        const correctIndex = letterToIndex[q.correct];
+
+        // Base styling reset
+        btn.className = 'w-9 h-9 rounded-lg font-semibold text-xs transition-all flex items-center justify-center border ';
+
+        if (isCurrent) {
+          btn.className += 'ring-2 ring-indigo-600 ring-offset-1 font-bold ';
+        }
+
+        if (userAnswer !== undefined) {
+          if (userAnswer === correctIndex) {
+            btn.className += 'bg-emerald-500 text-white border-emerald-600';
+          } else {
+            btn.className += 'bg-rose-500 text-white border-rose-600';
+          }
+        } else {
+          btn.className += isCurrent 
+            ? 'bg-indigo-50 text-indigo-700 border-indigo-200' 
+            : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200';
+        }
+      });
+
+      // Update answered count
+      const answeredCount = Object.keys(userAnswers).length;
+      document.getElementById('answered-count-badge').innerText = `${answeredCount}/${quizQuestions.length} Answered`;
+    }
+
+    function loadQuestion(index) {
+      currentIndex = index;
+      const qData = quizQuestions[currentIndex];
+      const correctIdx = letterToIndex[qData.correct];
+      const userAnsIdx = userAnswers[currentIndex];
+
+      // Update question badges and text
+      document.getElementById('question-number-badge').innerText = `Question ${currentIndex + 1} of ${quizQuestions.length}`;
+      document.getElementById('question-text').innerText = qData.question;
+
+      // Update bookmark state
+      const bmBtn = document.getElementById('bookmark-btn');
+      if (bookmarked.has(currentIndex)) {
+        bmBtn.innerHTML = `<i class="fa-solid fa-bookmark text-amber-500 text-lg"></i>`;
+      } else {
+        bmBtn.innerHTML = `<i class="fa-regular fa-bookmark text-slate-400 text-lg"></i>`;
+      }
+
+      // Progress bar
+      const progressPct = ((currentIndex + 1) / quizQuestions.length) * 100;
+      document.getElementById('progress-bar').style.width = `${progressPct}%`;
+
+      // Render Options
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      qData.options.forEach((optText, optIdx) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.onclick = () => selectOption(optIdx);
+
+        let borderStyle = "border-slate-200 hover:border-indigo-300 hover:bg-slate-50";
+        let letterBadge = "bg-slate-100 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600";
+        let checkIcon = "";
+
+        // If user has answered this question
+        if (userAnsIdx !== undefined) {
+          optionBtn.disabled = true;
+
+          if (optIdx === correctIdx) {
+            borderStyle = "border-emerald-500 bg-emerald-50/60 text-emerald-900 font-medium";
+            letterBadge = "bg-emerald-500 text-white";
+            checkIcon = `<i class="fa-solid fa-check text-emerald-600 text-lg ml-auto"></i>`;
+          } else if (optIdx === userAnsIdx) {
+            borderStyle = "border-rose-500 bg-rose-50/60 text-rose-900 font-medium";
+            letterBadge = "bg-rose-500 text-white";
+            checkIcon = `<i class="fa-solid fa-xmark text-rose-600 text-lg ml-auto"></i>`;
+          } else {
+            borderStyle = "border-slate-100 opacity-50";
+          }
+        }
+
+        optionBtn.className = `group w-full p-4 rounded-xl border-2 text-left transition-all flex items-center space-x-3.5 ${borderStyle}`;
+        optionBtn.innerHTML = `
+          <span class="w-8 h-8 rounded-lg font-bold text-xs flex items-center justify-center shrink-0 transition-colors ${letterBadge}">
+            ${indexToLetter[optIdx]}
+          </span>
+          <span class="text-sm sm:text-base text-slate-800 leading-snug">${optText}</span>
+          ${checkIcon}
+        `;
+
+        optionsContainer.appendChild(optionBtn);
+      });
+
+      // Handle Explanation Box
+      const expBox = document.getElementById('explanation-box');
+      if (userAnsIdx !== undefined) {
+        expBox.classList.remove('hidden');
+        const isCorrect = userAnsIdx === correctIdx;
+        const expIcon = document.getElementById('explanation-icon');
+        const expTitle = document.getElementById('explanation-title');
+        const expText = document.getElementById('explanation-text');
+
+        if (isCorrect) {
+          expBox.className = "mb-6 p-4 rounded-xl border bg-emerald-50 border-emerald-200 text-emerald-900";
+          expIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i>`;
+          expTitle.innerText = "Correct Answer!";
+          expText.innerText = `Great job! "${qData.options[correctIdx]}" is the correct answer based on management theory.`;
+        } else {
+          expBox.className = "mb-6 p-4 rounded-xl border bg-rose-50 border-rose-200 text-rose-900";
+          expIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600"></i>`;
+          expTitle.innerText = "Incorrect Selection";
+          expText.innerText = `The correct answer is Option ${indexToLetter[correctIdx]}: "${qData.options[correctIdx]}".`;
+        }
+      } else {
+        expBox.classList.add('hidden');
+      }
+
+      // Prev/Next Navigation State
+      document.getElementById('prev-btn').disabled = currentIndex === 0;
+      
+      const nextBtn = document.getElementById('next-btn');
+      if (currentIndex === quizQuestions.length - 1) {
+        nextBtn.innerHTML = `<span>Submit Quiz</span> <i class="fa-solid fa-check text-xs"></i>`;
+      } else {
+        nextBtn.innerHTML = `<span>Next</span> <i class="fa-solid fa-chevron-right text-xs"></i>`;
+      }
+
+      updateQuestionMapStyles();
+    }
+
+    function selectOption(optIndex) {
+      if (userAnswers[currentIndex] !== undefined) return;
+
+      userAnswers[currentIndex] = optIndex;
+      updateScoreDisplay();
+      loadQuestion(currentIndex);
+    }
+
+    function updateScoreDisplay() {
+      let score = 0;
+      Object.keys(userAnswers).forEach(idx => {
+        const correctIdx = letterToIndex[quizQuestions[idx].correct];
+        if (userAnswers[idx] === correctIdx) {
+          score++;
+        }
+      });
+      document.getElementById('score-display').innerText = score;
+    }
+
+    function jumpToQuestion(index) {
+      loadQuestion(index);
+    }
+
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        loadQuestion(currentIndex - 1);
+      }
+    }
+
+    function nextQuestion() {
+      if (currentIndex < quizQuestions.length - 1) {
+        loadQuestion(currentIndex + 1);
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function toggleBookmark() {
+      if (bookmarked.has(currentIndex)) {
+        bookmarked.delete(currentIndex);
+      } else {
+        bookmarked.add(currentIndex);
+      }
+      loadQuestion(currentIndex);
+    }
+
+    function finishQuiz() {
+      clearInterval(timerInterval);
+
+      let correctCount = 0;
+      Object.keys(userAnswers).forEach(idx => {
+        const correctIdx = letterToIndex[quizQuestions[idx].correct];
+        if (userAnswers[idx] === correctIdx) {
+          correctCount++;
+        }
+      });
+
+      const total = quizQuestions.length;
+      const incorrectCount = total - correctCount;
+      const pct = Math.round((correctCount / total) * 100);
+
+      // Score PCT display
+      document.getElementById('res-score-pct').innerText = `${pct}%`;
+      document.getElementById('res-correct-count').innerText = correctCount;
+      document.getElementById('res-incorrect-count').innerText = incorrectCount;
+
+      // Format time spent
+      const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+      const secs = String(secondsElapsed % 60).padStart(2, '0');
+      document.getElementById('res-time-spent').innerText = `${mins}:${secs}`;
+
+      // Badge Icon & Subtitle
+      const iconBox = document.getElementById('result-badge-icon');
+      const subtitle = document.getElementById('result-subtitle');
+
+      if (pct >= 85) {
+        iconBox.className = "w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 text-3xl";
+        iconBox.innerHTML = `<i class="fa-solid fa-trophy"></i>`;
+        subtitle.innerText = "Outstanding! You have mastered these management concepts.";
+      } else if (pct >= 60) {
+        iconBox.className = "w-20 h-20 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto mb-4 text-3xl";
+        iconBox.innerHTML = `<i class="fa-solid fa-award"></i>`;
+        subtitle.innerText = "Good job! You have a solid grasp on most topics.";
+      } else {
+        iconBox.className = "w-20 h-20 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-4 text-3xl";
+        iconBox.innerHTML = `<i class="fa-solid fa-book-open"></i>`;
+        subtitle.innerText = "Keep reviewing! Check your incorrect answers below to improve.";
+      }
+
+      renderReviewList('all');
+
+      quizScreen.classList.add('hidden');
+      resultsScreen.classList.remove('hidden');
+    }
+
+    function renderReviewList(filter) {
+      const reviewList = document.getElementById('review-list');
+      reviewList.innerHTML = '';
+
+      // Button states
+      document.getElementById('filter-all').className = filter === 'all' 
+        ? "px-3 py-1 bg-slate-900 text-white rounded-lg text-xs font-medium"
+        : "px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-medium";
+      document.getElementById('filter-incorrect').className = filter === 'incorrect' 
+        ? "px-3 py-1 bg-slate-900 text-white rounded-lg text-xs font-medium"
+        : "px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-medium";
+
+      quizQuestions.forEach((q, idx) => {
+        const correctIdx = letterToIndex[q.correct];
+        const userAnsIdx = userAnswers[idx];
+        const isCorrect = userAnsIdx === correctIdx;
+
+        if (filter === 'incorrect' && isCorrect) return;
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border ${isCorrect ? 'bg-slate-50 border-slate-200' : 'bg-rose-50/50 border-rose-200'}`;
+
+        const userText = userAnsIdx !== undefined ? `${indexToLetter[userAnsIdx]}: ${q.options[userAnsIdx]}` : "Unanswered";
+        const correctText = `${indexToLetter[correctIdx]}: ${q.options[correctIdx]}`;
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3 mb-2">
+            <span class="font-bold text-xs text-slate-500 uppercase tracking-wider">Question ${idx + 1}</span>
+            <span class="px-2 py-0.5 rounded text-xs font-semibold ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+              ${isCorrect ? 'Correct' : 'Incorrect'}
+            </span>
+          </div>
+          <p class="font-medium text-slate-900 text-sm mb-3">${q.question}</p>
+          <div class="space-y-1 text-xs sm:text-sm">
+            <div class="${isCorrect ? 'text-emerald-700 font-medium' : 'text-rose-700 font-medium'}">
+              <strong>Your Answer:</strong> ${userText}
+            </div>
+            ${!isCorrect ? `<div class="text-emerald-700 font-medium"><strong>Correct Answer:</strong> ${correctText}</div>` : ''}
+          </div>
+        `;
+
+        reviewList.appendChild(card);
+      });
+
+      if (reviewList.children.length === 0) {
+        reviewList.innerHTML = `<p class="text-center text-slate-500 text-sm py-8">No questions found matching this filter.</p>`;
+      }
+    }
+
+    function filterReview(type) {
+      renderReviewList(type);
+    }
+  </script>
+</body>
+</html>
